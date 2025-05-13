@@ -1,0 +1,34 @@
+# Version control
+.git/
+.gitignore
+
+# Build artifacts
+**/node_modules/
+**/build/
+**/dist/
+**/__pycache__/
+**/*.py[cod]
+
+# Environment
+**/.env
+**/env/
+**/.venv/
+**/venv/
+
+# Development artifacts
+**/.cache/
+**/.pytest_cache/
+**/.coverage
+**/coverage/
+
+# Editor files
+**/.idea/
+**/.vscode/
+**/*.sublime*
+
+# Docker files
+.dockerignore
+
+# System files
+**/.DS_Store
+**/Thumbs.db
