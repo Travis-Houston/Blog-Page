@@ -1,13 +1,10 @@
 # ---- Builder Stage ----
-FROM python:3.12-slim AS builder
+FROM python:3.12-alpine AS builder
 
 WORKDIR /app
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    libc-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Install build dependencies (Alpine uses apk)
+RUN apk update && apk add --no-cache gcc musl-dev
 
 # Copy requirements and install dependencies to a temp folder
 COPY requirements.txt .
@@ -15,7 +12,7 @@ RUN pip install --user --upgrade pip && \
     pip install --user --no-cache-dir -r requirements.txt
 
 # ---- Final Stage ----
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 WORKDIR /app
 
@@ -27,9 +24,6 @@ ENV PATH=/root/.local/bin:$PATH
 
 # Copy application code
 COPY . .
-
-# Copy .env file from project root to backend image
-COPY .env .env
 
 # Set permissions if needed
 RUN mkdir -p /app/logs && chmod -R 755 /app/logs

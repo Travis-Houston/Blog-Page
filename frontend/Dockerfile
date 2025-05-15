@@ -1,5 +1,5 @@
 # ---- Build Stage ----
-FROM node:20-alpine AS builder
+FROM node:20-alpine AS build
 
 WORKDIR /app
 
@@ -10,23 +10,21 @@ RUN yarn install --frozen-lockfile
 # Copy source files
 COPY . .
 
-# Copy .env file from project root to frontend build context
-COPY .env .env
-
 # Build the React app
 RUN yarn build
 
 # ---- Production Stage ----
-FROM node:20-alpine
+FROM nginx:1.25-alpine
 
-WORKDIR /app
+# Remove default nginx static assets
+RUN rm -rf /usr/share/nginx/html/*
 
-# Install serve to serve the build directory
-RUN yarn global add serve
+# Copy built React app from build stage
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Copy build output from builder
-COPY --from=builder /app/build ./build
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 3000
 
-CMD ["serve", "-s", "build", "-l", "3000"]
+CMD ["nginx", "-g", "daemon off;"]
